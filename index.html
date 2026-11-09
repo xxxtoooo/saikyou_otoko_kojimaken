@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STARTO MEMBER BOOK</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  padding:20px;
+  background:#17151e;
+  color:#f5f2fa;
+  font-family:Arial,"Noto Sans JP",sans-serif;
+}
+main{max-width:1200px;margin:auto}
+header{text-align:center;margin-bottom:25px}
+h1{font-size:27px;letter-spacing:2px}
+.subtitle{color:#aaa5b6;font-size:12px}
+.progress-area{margin:20px 0}
+.count{font-size:25px;font-weight:bold}
+#count{color:#10bd91}
+.bar{
+  height:12px;background:#343140;
+  border-radius:20px;overflow:hidden;margin-top:10px
+}
+#bar{
+  width:0;height:100%;
+  background:#10bd91;transition:.3s
+}
+#percent{text-align:right;color:#aaa5b6;font-size:13px;margin-top:5px}
+.input-area{
+  display:flex;gap:10px;margin:25px 0 15px
+}
+input{
+  flex:1;min-width:0;padding:17px;
+  background:#23212d;border:2px solid #3b3849;
+  border-radius:13px;color:white;font-size:17px
+}
+button{
+  cursor:pointer;border:0;border-radius:13px;
+  padding:13px 19px;font-weight:bold;font-size:15px
+}
+#add{background:#f04e38;color:white}
+.controls{display:flex;flex-wrap:wrap;gap:9px}
+.mode,.other{
+  background:#292735;color:white;
+  border:1px solid #454052;border-radius:30px
+}
+.mode.active{background:#454052;border-color:#8d7ca9}
+#message{margin:15px 0;min-height:25px;font-weight:bold}
+.good{color:#10bd91}
+.bad{color:#ff806f}
+.description{font-size:13px;color:#aaa5b6;line-height:1.7}
+.group{margin-top:27px}
+.group h2{
+  font-size:16px;padding-bottom:9px;
+  border-bottom:1px solid #393544
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px
+}
+.member{
+  min-height:85px;background:#23212d;
+  border:1px dashed #494557;border-radius:13px;
+  padding:12px;display:flex;flex-direction:column;
+  justify-content:space-between
+}
+.member .number{font-size:11px;color:#aaa5b6}
+.member .name{font-size:14px;font-weight:bold;overflow-wrap:anywhere}
+.member .hidden{color:#484456;letter-spacing:3px}
+.member.done{
+  background:#103c35;border:1px solid #087e65
+}
+.member.done .number{color:#75d9bd}
+.member.revealed{background:#302b3a;border:1px solid #766a88}
+footer{
+  text-align:center;color:#aaa5b6;
+  margin:35px 0;font-size:12px
+}
+@media(max-width:650px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .input-area{flex-direction:column}
+  #add{width:100%}
+}
+@media(max-width:380px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+</head>
+
+<body>
+<main>
+
+<header>
+  <h1>STARTO MEMBER BOOK</h1>
+  <div class="subtitle">MEMBER NAME CHALLENGE</div>
+</header>
+
+<div class="progress-area">
+  <div class="count">
+    <span id="count">0</span> /
+    <span id="total">0</span> 正解
+  </div>
+  <div class="bar"><div id="bar"></div></div>
+  <div id="percent">0%</div>
+</div>
+
+<form class="input-area" id="form">
+  <input id="answer" placeholder="名前を入力（例：京本大我）" autocomplete="off">
+  <button id="add" type="submit">追加する</button>
+</form>
+
+<div id="message"></div>
+
+<div class="controls">
+  <button class="mode active" id="kana">🌸 ひらがなOK</button>
+  <button class="mode" id="kanji">🔥 漢字ピッタリ</button>
+  <button class="other" id="reveal">答えを見る（ギブアップ）</button>
+  <button class="other" id="reset">リセット</button>
+</div>
+
+<p class="description" id="description">
+🌸 ひらがなOKモード：漢字・ひらがな・カタカナで正解。
+スペルミスや一部だけの入力は不正解。
+</p>
+
+<div id="collection"></div>
+
+<footer>
+  STARTO MEMBER BOOK<br>
+  メンバー名鑑
+</footer>
+
+</main>
+
+<script>
+const groups = [
+{
+ name:"20th Century",
+ members:[
+ ["坂本昌行","さかもとまさゆき"],
+ ["長野博","ながのひろし"],
+ ["井ノ原快彦","いのはらよしひこ"]
+ ]
+},
+{
+ name:"NEWS",
+ members:[
+ ["小山慶一郎","こやまけいいちろう"],
+ ["加藤シゲアキ","かとうしげあき"],
+ ["増田貴久","ますだたかひさ"]
+ ]
+},
+{
+ name:"SUPER EIGHT",
+ members:[
+ ["横山裕","よこやまゆう"],
+ ["村上信五","むらかみしんご"],
+ ["丸山隆平","まるやまりゅうへい"],
+ ["安田章大","やすだしょうた"],
+ ["大倉忠義","おおくらただよし"]
+ ]
+},
+{
+ name:"Hey! Say! JUMP",
+ members:[
+ ["山田涼介","やまだりょうすけ"],
+ ["知念侑李","ちねんゆうり"],
+ ["有岡大貴","ありおかだいき"],
+ ["髙木雄也","たかきゆうや"],
+ ["伊野尾慧","いのおけい"],
+ ["八乙女光","やおとめひかる"],
+ ["薮宏太","やぶこうた"]
+ ]
+},
+{
+ name:"Kis-My-Ft2",
+ members:[
+ ["千賀健永","せんがけんと"],
+ ["宮田俊哉","みやたとしや"],
+ ["横尾渉","よこおわたる"],
+ ["藤ヶ谷太輔","ふじがやたいすけ"],
+ ["玉森裕太","たまもりゆうた"],
+ ["二階堂高嗣","にかいどうたかし"]
+ ]
+},
+{
+ name:"timelesz",
+ members:[
+ ["佐藤勝利","さとうしょうり"],
+ ["菊池風磨","きくちふうま"],
+ ["松島聡","まつしまそう"],
+ ["寺西拓人","てらにしたくと"],
+ ["原嘉孝","はらよしたか"],
+ ["橋本将生","はしもとまさき"],
+ ["篠塚大輝","しのづかたいき"]
+ ]
+},
+{
+ name:"A.B.C-Z",
+ members:[
+ ["五関晃一","ごせきこういち"],
+ ["塚田僚一","つかだりょういち"],
+ ["戸塚祥太","とつかしょうた"],
+ ["橋本良亮","はしもとりょうすけ"]
+ ]
+},
+{
+ name:"WEST.",
+ members:[
+ ["重岡大毅","しげおかだいき"],
+ ["桐山照史","きりやまあきと"],
+ ["中間淳太","なかまじゅんた"],
+ ["神山智洋","かみやまともひろ"],
+ ["藤井流星","ふじいりゅうせい"],
+ ["濵田崇裕","はまだたかひろ"],
+ ["小瀧望","こたきのぞむ"]
+ ]
+},
+{
+ name:"King & Prince",
+ members:[
+ ["永瀬廉","ながせれん"],
+ ["髙橋海人","たかはしかいと"]
+ ]
+},
+{
+ name:"SixTONES",
+ members:[
+ ["ジェシー","じぇしー"],
+ ["京本大我","きょうもとたいが"],
+ ["松村北斗","まつむらほくと"],
+ ["髙地優吾","こうちゆうご"],
+ ["森本慎太郎","もりもとしんたろう"],
+ ["田中樹","たなかじゅり"]
+ ]
+},
+{
+ name:"Snow Man",
+ members:[
+ ["岩本照","いわもとひかる"],
+ ["深澤辰哉","ふかざわたつや"],
+ ["ラウール","らうーる"],
+ ["渡辺翔太","わたなべしょうた"],
+ ["向井康二","むかいこうじ"],
+ ["阿部亮平","あべりょうへい"],
+ ["目黒蓮","めぐろれん"],
+ ["宮舘涼太","みやだてりょうた"],
+ ["佐久間大介","さくまだいすけ"]
+ ]
+},
+{
+ name:"なにわ男子",
+ members:[
+ ["西畑大吾","にしはただいご"],
+ ["大西流星","おおにしりゅうせい"],
+ ["道枝駿佑","みちえだしゅんすけ"],
+ ["高橋恭平","たかはしきょうへい"],
+ ["長尾謙杜","ながおけんと"],
+ ["藤原丈一郎","ふじわらじょういちろう"],
+ ["大橋和也","おおはしかずや"]
+ ]
+},
+{
+ name:"Travis Japan",
+ members:[
+ ["宮近海斗","みやちかかいと"],
+ ["中村海人","なかむらかいと"],
+ ["七五三掛龍也","しめかけりゅうや"],
+ ["川島如恵留","かわしまのえる"],
+ ["吉澤閑也","よしざわしずや"],
+ ["松田元太","まつだげんた"],
+ ["松倉海斗","まつくらかいと"]
+ ]
+},
+{
+ name:"Aぇ! group",
+ members:[
+ ["正門良規","まさかどよしのり"],
+ ["末澤誠也","すえざわせいや"],
+ ["小島健","こじまけん"],
+ ["佐野晶哉","さのまさや"]
+ ]
+},
+{
+ name:"ふぉ～ゆ～",
+ members:[
+ ["福田悠太","ふくだゆうた"],
+ ["辰巳雄大","たつみゆうだい"],
+ ["越岡裕貴","こしおかゆうき"],
+ ["松崎祐介","まつざきゆうすけ"]
+ ]
+},
+{
+ name:"KEY TO LIT",
+ members:[
+ ["岩﨑大昇","いわさきたいしょう"],
+ ["井上瑞稀","いのうえみずき"],
+ ["中村嶺亜","なかむられいあ"],
+ ["猪狩蒼弥","いがりそうや"],
+ ["佐々木大光","ささきたいこう"]
+ ]
+}
+];
+
+const members = groups.flatMap(g =>
+ g.members.map(m => ({
+   name:m[0],
+   reading:m[1],
+   group:g.name
+ }))
+);
+
+let found = new Set(
+ JSON.parse(localStorage.getItem("startoBook") || "[]")
+);
+let mode = "kana";
+let reveal = false;
+
+const $ = id => document.getElementById(id);
+
+$("total").textContent = members.length;
+
+function normalize(s){
+ return s.normalize("NFKC").replace(/[\s　]/g,"");
+}
+
+function toHiragana(s){
+ return s.replace(/[ァ-ヶ]/g,
+ c => String.fromCharCode(c.charCodeAt(0)-96));
+}
+
+function render(){
+ $("count").textContent = found.size;
+
+ const percent = Math.round(
+  found.size / members.length * 100
+ );
+
+ $("bar").style.width = percent + "%";
+ $("percent").textContent = percent + "%";
+
+ $("collection").innerHTML = "";
+
+ let number = 0;
+
+ groups.forEach(group => {
+  const section = document.createElement("section");
+  section.className = "group";
+
+  const title = document.createElement("h2");
+  title.textContent = group.name;
+  section.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "grid";
+
+  group.members.forEach(m => {
+   number++;
+
+   const done = found.has(m[0]);
+
+   const tile = document.createElement("div");
+   tile.className = "member" +
+     (done ? " done" : reveal ? " revealed" : "");
+
+   const no = document.createElement("span");
+   no.className = "number";
+   no.textContent = "No." + number;
+
+   const name = document.createElement("span");
+   name.className = done || reveal ? "name" : "hidden";
+   name.textContent = done || reveal ? m[0] : "・・・・";
+
+   tile.append(no,name);
+   grid.appendChild(tile);
+  });
+
+  section.appendChild(grid);
+  $("collection").appendChild(section);
+ });
+
+ localStorage.setItem(
+  "startoBook",
+  JSON.stringify([...found])
+ );
+}
+
+function setMode(next){
+ mode = next;
+
+ $("kana").classList.toggle("active",mode==="kana");
+ $("kanji").classList.toggle("active",mode==="kanji");
+
+ $("description").textContent =
+ mode==="kana"
+ ? "🌸 ひらがなOKモード：漢字・ひらがな・カタカナで正解。スペルミスや一部だけの入力は不正解。"
+ : "🔥 漢字ピッタリモード：正式な漢字氏名と完全一致した場合だけ正解。読みだけでは不正解。";
+}
+
+function answer(value){
+ const input = normalize(value);
+
+ if(!input){
+  showMessage("名前を入力してね！",false);
+  return;
+ }
+
+ const target = members.find(m => {
+  if(mode==="kanji"){
+   return normalize(m.name) === input;
+  }
+
+  return normalize(m.name) === input ||
+         toHiragana(input) === m.reading;
+ });
+
+ if(!target){
+  showMessage("不正解！もう一度確認してね。",false);
+  return;
+ }
+
+ if(found.has(target.name)){
+  showMessage("そのメンバーは登録済みだよ！",true);
+  return;
+ }
+
+ found.add(target.name);
+
+ showMessage(
+  "✓ 正解！ "+target.name+"（"+target.group+"）が埋まったよ！",
+  true
+ );
+
+ render();
+
+ if(found.size === members.length){
+  showMessage("🎉 全員正解！図鑑コンプリート！！",true);
+ }
+
+ $("answer").value = "";
+}
+
+function showMessage(text,good){
+ $("message").textContent = text;
+ $("message").className = good ? "good" : "bad";
+}
+
+$("form").addEventListener("submit",e=>{
+ e.preventDefault();
+ answer($("answer").value);
+});
+
+$("kana").onclick = ()=>setMode("kana");
+$("kanji").onclick = ()=>setMode("kanji");
+
+$("reveal").onclick = ()=>{
+ reveal = !reveal;
+ $("reveal").textContent =
+  reveal ? "答えを隠す" : "答えを見る（ギブアップ）";
+ render();
+};
+
+$("reset").onclick = ()=>{
+ if(!confirm("進捗をリセットしますか？")) return;
+
+ found.clear();
+ reveal = false;
+
+ $("reveal").textContent = "答えを見る（ギブアップ）";
+ showMessage("リセットしました。",true);
+ render();
+};
+
+render();
+</script>
+</body>
+</html>
