@@ -675,9 +675,19 @@ function showResult(title,description){
  $("result").classList.add("show");
 }
 
-function shareX(){
- const url = "https://twitter.com/intent/tweet?text=" +
-  encodeURIComponent(lastResultText);
+  function shareX(){
+ const originalPost =
+  "https://x.com/p0p_step_jump/status/2119714755464384905";
+
+ const shareText =
+  "STARTO MEMBER BOOKに挑戦しました！\n" +
+  lastResultText.split("\n").slice(1,4).join("\n");
+
+ const url =
+  "https://twitter.com/intent/tweet?text=" +
+  encodeURIComponent(shareText) +
+  "&url=" +
+  encodeURIComponent(originalPost);
 
  window.open(url,"_blank","noopener");
 }
