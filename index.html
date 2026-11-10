@@ -4,58 +4,141 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>STARTO MEMBER BOOK</title>
+
 <style>
 *{box-sizing:border-box}
+
+:root{
+  color-scheme:dark;
+  --bg:#17151e;
+  --text:#f5f2fa;
+  --muted:#aaa5b6;
+  --panel:#23212d;
+  --panel2:#292735;
+  --border:#454052;
+  --bar-bg:#343140;
+  --green:#10bd91;
+  --green-bg:#103c35;
+  --revealed-bg:#302b3a;
+}
+
+@media(prefers-color-scheme:light){
+  :root{
+    color-scheme:light;
+    --bg:#f6f5fa;
+    --text:#272432;
+    --muted:#777282;
+    --panel:#ffffff;
+    --panel2:#eeecf3;
+    --border:#d8d4e1;
+    --bar-bg:#e3e0e9;
+    --green:#079b76;
+    --green-bg:#d9f4eb;
+    --revealed-bg:#e8e3ef;
+  }
+}
+
 body{
   margin:0;
   padding:20px;
-  background:#17151e;
-  color:#f5f2fa;
+  background:var(--bg);
+  color:var(--text);
   font-family:Arial,"Noto Sans JP",sans-serif;
+  transition:background .2s,color .2s;
 }
+
 main{max-width:1200px;margin:auto}
 header{text-align:center;margin-bottom:25px}
 h1{font-size:27px;letter-spacing:2px}
-.subtitle{color:#aaa5b6;font-size:12px}
+.subtitle{color:var(--muted);font-size:12px}
+
 .progress-area{margin:20px 0}
 .count{font-size:25px;font-weight:bold}
-#count{color:#10bd91}
+#count{color:var(--green)}
 .bar{
-  height:12px;background:#343140;
+  height:12px;background:var(--bar-bg);
   border-radius:20px;overflow:hidden;margin-top:10px
 }
 #bar{
   width:0;height:100%;
-  background:#10bd91;transition:.3s
+  background:var(--green);transition:.3s
 }
-#percent{text-align:right;color:#aaa5b6;font-size:13px;margin-top:5px}
+#percent{text-align:right;color:var(--muted);font-size:13px;margin-top:5px}
+
 .input-area{
   display:flex;gap:10px;margin:25px 0 15px
 }
 input{
   flex:1;min-width:0;padding:17px;
-  background:#23212d;border:2px solid #3b3849;
-  border-radius:13px;color:white;font-size:17px
+  background:var(--panel);border:2px solid var(--border);
+  border-radius:13px;color:var(--text);font-size:17px
 }
 button{
   cursor:pointer;border:0;border-radius:13px;
   padding:13px 19px;font-weight:bold;font-size:15px
 }
+button:disabled{opacity:.5;cursor:not-allowed}
+
 #add{background:#f04e38;color:white}
 .controls{display:flex;flex-wrap:wrap;gap:9px}
 .mode,.other{
-  background:#292735;color:white;
-  border:1px solid #454052;border-radius:30px
+  background:var(--panel2);color:var(--text);
+  border:1px solid var(--border);border-radius:30px
 }
-.mode.active{background:#454052;border-color:#8d7ca9}
+.mode.active{background:var(--border);border-color:#8d7ca9}
+
 #message{margin:15px 0;min-height:25px;font-weight:bold}
-.good{color:#10bd91}
-.bad{color:#ff806f}
-.description{font-size:13px;color:#aaa5b6;line-height:1.7}
+.good{color:var(--green)}
+.bad{color:#e66c62}
+.description{font-size:13px;color:var(--muted);line-height:1.7}
+
+.timer-area{
+  margin:20px 0;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--panel);
+  text-align:center;
+}
+.timer-title{font-size:13px;color:var(--muted)}
+#timer{
+  font-size:35px;
+  font-weight:bold;
+  letter-spacing:2px;
+  margin:8px 0;
+  font-variant-numeric:tabular-nums;
+}
+#startAttack{background:#7655b5;color:white}
+#stopAttack{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+.timer-buttons{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+
+.result{
+  display:none;
+  margin:20px 0;
+  padding:22px;
+  border-radius:17px;
+  border:1px solid var(--green);
+  background:var(--green-bg);
+  color:var(--text);
+  text-align:center;
+}
+.result.show{display:block}
+.result h2{margin:0 0 12px;font-size:23px}
+.result-time{font-size:36px;font-weight:bold;margin:10px 0}
+.result-detail{font-size:14px;line-height:1.9}
+.share-buttons{
+  display:flex;justify-content:center;
+  gap:10px;flex-wrap:wrap;margin-top:18px
+}
+.share-buttons button{color:white}
+#shareX{background:#222}
+#shareLine{background:#06C755}
+#shareNative{background:#7655b5}
+
 .group{margin-top:27px}
 .group h2{
   font-size:16px;padding-bottom:9px;
-  border-bottom:1px solid #393544
+  border-bottom:1px solid var(--border)
 }
 .grid{
   display:grid;
@@ -63,23 +146,25 @@ button{
   gap:10px
 }
 .member{
-  min-height:85px;background:#23212d;
-  border:1px dashed #494557;border-radius:13px;
+  min-height:85px;background:var(--panel);
+  border:1px dashed var(--border);border-radius:13px;
   padding:12px;display:flex;flex-direction:column;
   justify-content:space-between
 }
-.member .number{font-size:11px;color:#aaa5b6}
+.member .number{font-size:11px;color:var(--muted)}
 .member .name{font-size:14px;font-weight:bold;overflow-wrap:anywhere}
-.member .hidden{color:#484456;letter-spacing:3px}
+.member .hidden{color:var(--muted);letter-spacing:3px}
 .member.done{
-  background:#103c35;border:1px solid #087e65
+  background:var(--green-bg);border:1px solid var(--green)
 }
-.member.done .number{color:#75d9bd}
-.member.revealed{background:#302b3a;border:1px solid #766a88}
+.member.done .number{color:var(--green)}
+.member.revealed{background:var(--revealed-bg);border:1px solid #8d7ca9}
+
 footer{
-  text-align:center;color:#aaa5b6;
-  margin:35px 0;font-size:12px
+  text-align:center;color:var(--muted);
+  margin:35px 0;font-size:12px;line-height:1.8
 }
+
 @media(max-width:650px){
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .input-area{flex-direction:column}
@@ -127,12 +212,45 @@ footer{
 スペルミスや一部だけの入力は不正解。
 </p>
 
+<!-- タイムアタック -->
+<div class="timer-area">
+  <div class="timer-title">⏱ TIME ATTACK</div>
+  <div style="margin:12px 0;">
+  <label for="timeLimit">制限時間：</label>
+  <select id="timeLimit">
+    <option value="180000">3分</option>
+    <option value="300000" selected>5分</option>
+  </select>
+</div>
+  <div id="timer">00:00.00</div>
+  <div class="timer-buttons">
+    <button id="startAttack">タイムアタック開始</button>
+    <button id="stopAttack">途中で終了</button>
+  </div>
+  <p class="description">
+    スタートを押すと計測開始！全員正解すると自動でタイマーが止まるよ。
+  </p>
+</div>
+
+<!-- 結果表示 -->
+<div class="result" id="result">
+  <h2 id="resultTitle">🎉 ALL CLEAR!</h2>
+  <div class="result-time" id="resultTime">00:00.00</div>
+  <div class="result-detail" id="resultDetail"></div>
+  <div class="share-buttons">
+    <button id="shareX">𝕏 Xで共有</button>
+    <button id="shareLine">LINEで共有</button>
+    <button id="shareNative">共有メニュー</button>
+  </div>
+</div>
+
 <div id="collection"></div>
 
 <footer>
   STARTO MEMBER BOOK<br>
   メンバー名鑑（非公式サイト）<br>
-  個人アーティスト（木村拓哉さんや上田竜也さんなど）は今回対象外です。
+  個人アーティスト（木村拓哉さんや上田竜也さんなど）は今回対象外です。<br>
+  <span id="themeLabel">テーマ：端末の設定に連動</span>
 </footer>
 
 </main>
@@ -306,8 +424,18 @@ const members = groups.flatMap(g =>
 let found = new Set(
  JSON.parse(localStorage.getItem("startoBook") || "[]")
 );
+
 let mode = "kana";
 let reveal = false;
+
+// タイムアタック用
+let attackMode = false;
+let attackFound = new Set();
+let attackStart = 0;
+let attackElapsed = 0;
+let attackTimer = null;
+let attackFinished = false;
+let lastResultText = "";
 
 const $ = id => document.getElementById(id);
 
@@ -322,11 +450,17 @@ function toHiragana(s){
  c => String.fromCharCode(c.charCodeAt(0)-96));
 }
 
+function currentFound(){
+ return attackMode ? attackFound : found;
+}
+
 function render(){
- $("count").textContent = found.size;
+ const activeFound = currentFound();
+
+ $("count").textContent = activeFound.size;
 
  const percent = Math.round(
-  found.size / members.length * 100
+  activeFound.size / members.length * 100
  );
 
  $("bar").style.width = percent + "%";
@@ -350,7 +484,7 @@ function render(){
   group.members.forEach(m => {
    number++;
 
-   const done = found.has(m[0]);
+   const done = activeFound.has(m[0]);
 
    const tile = document.createElement("div");
    tile.className = "member" +
@@ -398,6 +532,11 @@ function answer(value){
   return;
  }
 
+ if(attackFinished){
+  showMessage("タイムアタックは終了しているよ。もう一度スタートしてね！",false);
+  return;
+ }
+
  const target = members.find(m => {
   if(mode==="kanji"){
    return normalize(m.name) === input;
@@ -412,12 +551,14 @@ function answer(value){
   return;
  }
 
- if(found.has(target.name)){
+ const activeFound = currentFound();
+
+ if(activeFound.has(target.name)){
   showMessage("そのメンバーは登録済みだよ！",true);
   return;
  }
 
- found.add(target.name);
+ activeFound.add(target.name);
 
  showMessage(
   "✓ 正解！ "+target.name+"（"+target.group+"）が埋まったよ！",
@@ -426,8 +567,13 @@ function answer(value){
 
  render();
 
- if(found.size === members.length){
-  showMessage("🎉 全員正解！図鑑コンプリート！！",true);
+ if(activeFound.size === members.length){
+  if(attackMode){
+   finishAttack(true);
+  }else{
+   showMessage("🎉 全員正解！図鑑コンプリート！！",true);
+   showResult("🎉 ALL CLEAR!", "通常モードで全問正解！");
+  }
  }
 
  $("answer").value = "";
@@ -436,6 +582,133 @@ function answer(value){
 function showMessage(text,good){
  $("message").textContent = text;
  $("message").className = good ? "good" : "bad";
+}
+
+function formatTime(ms){
+ const minutes = Math.floor(ms / 60000);
+ const seconds = Math.floor((ms % 60000) / 1000);
+ const centiseconds = Math.floor((ms % 1000) / 10);
+
+ return String(minutes).padStart(2,"0") + ":" +
+        String(seconds).padStart(2,"0") + "." +
+        String(centiseconds).padStart(2,"0");
+}
+
+function updateTimer(){
+ const elapsed = Date.now() - attackStart;
+ $("timer").textContent = formatTime(elapsed);
+}
+
+function startAttack(){
+ if(attackTimer) clearInterval(attackTimer);
+
+ attackMode = true;
+ attackFinished = false;
+ attackFound = new Set();
+ reveal = false;
+
+ $("result").classList.remove("show");
+ $("reveal").textContent = "答えを見る（ギブアップ）";
+ $("answer").disabled = false;
+ $("add").disabled = false;
+ $("startAttack").textContent = "もう一度スタート";
+
+ attackStart = Date.now();
+ attackElapsed = 0;
+
+ updateTimer();
+ attackTimer = setInterval(updateTimer,50);
+
+ showMessage("タイムアタック開始！全員の名前を入力しよう！",true);
+ render();
+ $("answer").focus();
+}
+
+function finishAttack(clear){
+ if(!attackMode || attackFinished) return;
+
+ attackFinished = true;
+ attackElapsed = Date.now() - attackStart;
+
+ if(attackTimer){
+  clearInterval(attackTimer);
+  attackTimer = null;
+ }
+
+ $("timer").textContent = formatTime(attackElapsed);
+ $("answer").disabled = true;
+ $("add").disabled = true;
+
+ if(clear){
+  showMessage("🎉 全問正解！タイムアタッククリア！！",true);
+  showResult("🎉 TIME ATTACK CLEAR!", "全員正解！");
+ }else{
+  showMessage("タイムアタック終了！おつかれさまでした！",true);
+  showResult("⏱ TIME ATTACK RESULT", "途中終了");
+ }
+}
+
+function showResult(title,description){
+ const count = currentFound().size;
+ const percent = Math.round(count / members.length * 100);
+
+ $("resultTitle").textContent = title;
+
+ if(attackMode){
+  $("resultTime").textContent = formatTime(attackElapsed);
+ }else{
+  $("resultTime").textContent = "100%";
+ }
+
+ $("resultDetail").textContent =
+  description + "　正解数：" + count + " / " +
+  members.length + "　達成率：" + percent + "%";
+
+ lastResultText =
+  "STARTO MEMBER BOOK\n" +
+  description + "\n" +
+  "正解数：" + count + " / " + members.length + "\n" +
+  "達成率：" + percent + "%\n" +
+  (attackMode ? "タイム：" + formatTime(attackElapsed) + "\n" : "") +
+  location.href;
+
+ $("result").classList.add("show");
+}
+
+function shareX(){
+ const url = "https://twitter.com/intent/tweet?text=" +
+  encodeURIComponent(lastResultText);
+
+ window.open(url,"_blank","noopener");
+}
+
+function shareLine(){
+ const url = "https://line.me/R/share?text=" +
+  encodeURIComponent(lastResultText);
+
+ window.open(url,"_blank","noopener");
+}
+
+async function shareNative(){
+ if(navigator.share){
+  try{
+   await navigator.share({
+    title:"STARTO MEMBER BOOK",
+    text:lastResultText
+   });
+  }catch(e){}
+ }else{
+  copyResult();
+ }
+}
+
+async function copyResult(){
+ try{
+  await navigator.clipboard.writeText(lastResultText);
+  showMessage("共有用の結果をコピーしたよ！",true);
+ }catch(e){
+  showMessage("コピーできなかった場合は、XかLINEのボタンを使ってね。",false);
+ }
 }
 
 $("form").addEventListener("submit",e=>{
@@ -447,6 +720,10 @@ $("kana").onclick = ()=>setMode("kana");
 $("kanji").onclick = ()=>setMode("kanji");
 
 $("reveal").onclick = ()=>{
+ if(attackMode && !attackFinished){
+  finishAttack(false);
+ }
+
  reveal = !reveal;
  $("reveal").textContent =
   reveal ? "答えを隠す" : "答えを見る（ギブアップ）";
@@ -456,16 +733,60 @@ $("reveal").onclick = ()=>{
 $("reset").onclick = ()=>{
  if(!confirm("進捗をリセットしますか？")) return;
 
+ if(attackTimer){
+  clearInterval(attackTimer);
+  attackTimer = null;
+ }
+
  found.clear();
+ attackFound.clear();
+ attackMode = false;
+ attackFinished = false;
  reveal = false;
 
+ $("timer").textContent = "00:00.00";
+ $("answer").disabled = false;
+ $("add").disabled = false;
+ $("result").classList.remove("show");
  $("reveal").textContent = "答えを見る（ギブアップ）";
+ $("startAttack").textContent = "タイムアタック開始";
+
  showMessage("リセットしました。",true);
  render();
 };
+
+$("startAttack").onclick = startAttack;
+$("stopAttack").onclick = ()=>{
+ if(attackMode && !attackFinished){
+  finishAttack(false);
+ }else{
+  showMessage("タイムアタック中ではないよ！",false);
+ }
+};
+
+$("shareX").onclick = shareX;
+$("shareLine").onclick = shareLine;
+$("shareNative").onclick = shareNative;
+
+// 端末のダーク／ライト設定に連動
+const colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+function updateThemeLabel(){
+ $("themeLabel").textContent =
+  colorScheme.matches
+  ? "テーマ：ダークモード"
+  : "テーマ：ライトモード";
+}
+
+updateThemeLabel();
+
+if(colorScheme.addEventListener){
+ colorScheme.addEventListener("change",updateThemeLabel);
+}else if(colorScheme.addListener){
+ colorScheme.addListener(updateThemeLabel);
+}
 
 render();
 </script>
 </body>
 </html>
-
